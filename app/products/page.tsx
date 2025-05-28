@@ -120,16 +120,30 @@ export default function ProductsPage() {
   const [selectedGemstones, setSelectedGemstones] = useState<string[]>([])
   const [selectedMetals, setSelectedMetals] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState("")
+  const [sortBy, setSortBy] = useState<"featured" | "price-low" | "price-high" | "rating">("featured")
 
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = selectedCategory === "all" || product.category === selectedCategory
-    const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
-    const matchesGemstone = selectedGemstones.length === 0 || selectedGemstones.includes(product.gemstone)
-    const matchesMetal = selectedMetals.length === 0 || selectedMetals.includes(product.metal)
+  const filteredProducts = products
+    .filter((product) => {
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory
+      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
+      const matchesGemstone = selectedGemstones.length === 0 || selectedGemstones.includes(product.gemstone)
+      const matchesMetal = selectedMetals.length === 0 || selectedMetals.includes(product.metal)
 
-    return matchesSearch && matchesCategory && matchesPrice && matchesGemstone && matchesMetal
-  })
+      return matchesSearch && matchesCategory && matchesPrice && matchesGemstone && matchesMetal
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "price-low":
+          return a.price - b.price
+        case "price-high":
+          return b.price - a.price
+        case "rating":
+          return b.rating - a.rating
+        default:
+          return 0
+      }
+    })
 
   const handleGemstoneChange = (gemstone: string, checked: boolean) => {
     if (checked) {
